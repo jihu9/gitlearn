@@ -1,5 +1,5 @@
 # gitlearn
 learn git
 
-# 20190730
+# 2019/07/30
 Hello World！
