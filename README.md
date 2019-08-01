@@ -184,4 +184,79 @@ $ git checkout -- test.txt
 
 ---
 
+### 远程仓库
+#### 创建SSH Key
+>创建**SSH Key**。在用户主目录下，看看有没有.ssh目录，如果有，再看看这个目录下有没有id_rsa和id_rsa.pub这两个文件，如果已经有了，可直接跳到下一步。如果没有，打开`Shell`（Windows下打开`Git Bash`），创建SSH Key：
+```git
+$ ssh-keygen -t rsa -C "youremail@example.com"
+```
+>你需要把邮件地址换成你自己的邮件地址，然后一路回车，使用默认值即可，由于这个Key也不是用于军事目的，所以也无需设置密码。
+如果一切顺利的话，可以在用户主目录里找到.ssh目录，里面有`id_rsa`和`id_rsa.pub`两个文件，这两个就是SSH Key的秘钥对，id_rsa是私钥，不能泄露出去，**id_rsa.pub是公钥**，可以放心地告诉任何人。
+---
+
+### 创建远程库
+
+1. 登陆GitHub，然后，在右上角找到**“Create a new repo”**按钮，创建一个新的仓库：
+![创建新的仓库](https://upload-images.jianshu.io/upload_images/29581-b8faa661f0a6177d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+2. 在Repository name填入`learngit`，其他保持默认设置，点击“**Create repository**”按钮，就成功地创建了一个新的Git仓库：
+![创建新的git仓库](https://upload-images.jianshu.io/upload_images/29581-64a1b41608179844?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+3. 根据`GitHub`的提示，在本地的learngit仓库下运行命令：
+```git
+$ git remote add origin git@github.com:you_name/learngit.git
+```
+请千万注意，把上面的`michaelliao`替换成你自己的GitHub账户名，否则，你在本地关联的就是我的远程库，关联没有问题，但是你以后推送是推不上去的，因为你的SSH Key公钥不在我的账户列表中。
+
+4. 添加后，远程库的名字就是`origin`，这是Git默认的叫法，也可以改成别的，但是`origin`这个名字一看就知道是远程库。下一步，就可以把本地库的所有内容推送到远程库上：
+```git
+$ git push -u origin master
+Counting objects: 20, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (20/20), 1.64 KiB | 560.00 KiB/s, done.
+Total 20 (delta 5), reused 0 (delta 0)
+remote: Resolving deltas: 100% (5/5), done.
+To github.com:michaelliao/learngit.git
+ * [new branch]      master -> master
+Branch 'master' set up to track remote branch 'master' from 'origin'.
+```
+
+把本地库的内容推送到远程，用`git push`命令，实际上是把当前分支`master`推送到远程。
+
+由于远程库是空的，我们第一次推送`master`分支时，加上了`-u`参数，`Git`不但会把本地的`master`分支内容推送的远程新的`master`分支，还会把本地的`master`分支和远程的`master`分支关联起来，在以后的推送或者拉取时就可以简化命令。
+5. 只要本地作了提交，就可以通过命令：
+```git
+$ git push origin master
+```
+把本地`master`分支的最新修改推送至`GitHub`，现在，你就拥有了真正的分布式版本库！
+
+#### 小结
+- 要关联一个远程库，使用命令`git remote add origin git@server-name:path/repo-name.git`；
+
+- 关联后，使用命令`git push -u origin master`第一次推送`master`分支的所有内容；
+
+- 此后，每次本地提交后，只要有必要，就可以使用命令`git push origin master`推送最新修改；
+
+>分布式版本系统的最大好处之一是在本地工作完全不需要考虑远程库的存在，也就是有没有联网都可以正常工作，而SVN在没有联网的时候是拒绝干活的！当有网络的时候，再把本地提交推送一下就完成了同步，真是太方便了！
+
+---
+
+### 克隆仓库
+用命令`git clone`克隆一个本地库：
+```git
+$ git clone git@github.com:you_name/gitskills.git
+Cloning into 'gitskills'...
+remote: Counting objects: 3, done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 3
+Receiving objects: 100% (3/3), done.
+```
+注意把Git库的地址换成你自己的，然后进入gitskills目录看看，已经有`README.md`文件了
+
+#### 小结
+- 要克隆一个仓库，首先必须知道仓库的地址，然后使用`git clone`命令克隆。
+
+- Git支持多种协议，包括`https`，但通过`ssh`支持的原生`git`协议速度最快。
+
+---
+
 
