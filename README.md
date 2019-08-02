@@ -263,5 +263,170 @@ Receiving objects: 100% (3/3), done.
 - Git支持多种协议，包括`https`，但通过`ssh`支持的原生`git`协议速度最快。
 
 ---
+# **day04 2019/08/02**
 
+### 创建分支
+
+创建dev分支，然后切换到dev分支：
+```git
+$ git checkout -b dev
+Switched to a new branch 'dev'
+```
+`git checkout`命令加上`-b`参数表示创建并切换，相当于以下两条命令：
+```git
+$ git branch dev
+$ git checkout dev
+Switched to branch 'dev'
+```
+然后，用`git branch`命令查看当前分支：
+```git
+$ git branch
+* dev
+  master
+```
+`git branch`命令会列出所有分支，当前分支前面会标一个*号。
+
+然后，我们就可以在dev分支上正常提交，比如对`readme.txt`做个修改，加上一行：
+>Creating a new branch is quick.
+
+然后提交：
+```git
+$ git add readme.txt 
+$ git commit -m "branch test"
+[dev b17d20e] branch test
+ 1 file changed, 1 insertion(+)
+```
+现在，`dev`分支的工作完成，我们就可以切换回`master`分支：
+```git
+$ git checkout master
+Switched to branch 'master'
+```
+切换回 `master`分支后，再查看一个`readme.txt`文件，刚才添加的内容不见了！因为那个提交是在`dev`分支上，而`master`分支此刻的提交点并没有变：
+
+![此时的分支状态](https://upload-images.jianshu.io/upload_images/29581-68f285076d3f5aea?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+---
+
+### 合并分支
+
+把`dev`分支的工作成果合并到`master`分支上：
+```git
+$ git merge dev
+Updating d46f35e..b17d20e
+Fast-forward
+ readme.txt | 1 +
+ 1 file changed, 1 insertion(+)
+```
+`git merge`命令用于合并指定分支到当前分支。合并后，再查看`readme.txt`的内容，就可以看到，和`dev`分支的最新提交是完全一样的。
+
+注意到上面的**Fast-forward**信息，Git告诉我们，这次合并是“**快进模式**”，也就是直接把`master`指向`dev`的当前提交，所以合并速度非常快。
+
+当然，也不是每次合并都能**Fast-forward**，我们后面会讲其他方式的合并。
+
+合并完成后，就可以放心地删除`dev`分支了：
+```git
+$ git branch -d dev
+Deleted branch dev (was b17d20e).
+```
+删除后，查看`branch`，就只剩下`master`分支了：
+```git
+$ git branch
+* master
+```
+因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在`master`分支上工作效果是一样的，但过程更安全。
+
+#### 小结
+
+Git鼓励大量使用分支：
+
+- 查看分支：`git branch`
+
+- 创建分支：`git branch <name>`
+
+- 切换分支：`git checkout <name>`
+
+- 创建+切换分支：`git checkout -b <name>`
+
+- 合并某分支到当前分支：`git merge <name>`
+
+- 删除分支：`git branch -d <name>`
+
+---
+
+### 解决冲突
+
+Git告诉我们，`XXX`文件存在冲突，必须手动解决冲突后再提交。`git status`也可以告诉我们冲突的文件：
+```git
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 2 commits.
+  (use "git push" to publish your local commits)
+
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+
+	both modified:   readme.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+我们可以直接查看`readme.txt`的内容：
+```git
+Git is a distributed version control system.
+Git is free software distributed under the GPL.
+Git has a mutable index called stage.
+Git tracks changes of files.
+<<<<<<< HEAD
+Creating a new branch is quick & simple.
+=======
+Creating a new branch is quick AND simple.
+>>>>>>> feature1
+```
+Git用`<<<<<<<，=======，>>>>>>>`标记出不同分支的内容，我们修改如下后保存：
+
+> Creating a new branch is quick and simple.
+
+再提交：
+```git
+$ git add readme.txt 
+$ git commit -m "conflict fixed"
+[master cf810e4] conflict fixed
+```
+现在，`master`分支和`feature1`分支变成了下图所示：
+
+![此刻的分支结构状态](https://upload-images.jianshu.io/upload_images/29581-64ef8383ce9b76a5?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+用带参数的`git log`也可以看到分支的合并情况：
+```git
+$ git log --graph --pretty=oneline --abbrev-commit
+*   cf810e4 (HEAD -> master) conflict fixed
+|\  
+| * 14096d0 (feature1) AND simple
+* | 5dc6824 & simple
+|/  
+* b17d20e branch test
+* d46f35e (origin/master) remove test.txt
+* b84166e add test.txt
+* 519219b git tracks changes
+* e43a48b understand how stage works
+* 1094adb append GPL
+* e475afc add distributed
+* eaadf4e wrote a readme file
+```
+最后，删除feature1分支：
+```git
+$ git branch -d feature1
+Deleted branch feature1 (was 14096d0).
+```
+#### 小结
+当Git无法自动合并分支时，就必须首先**解决冲突。解决冲突后，再提交，合并完成**。
+
+**解决冲突**就是**把Git合并失败的文件手动编辑为我们希望的内容**，再**提交**。
+
+用`git log --graph`命令可以看到分支合并图。
+
+---
 
