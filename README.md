@@ -603,3 +603,8 @@ $ git stash apply stash@{0}
 2. 当手头工作没有完成时，先把工作现场`git stash`一下，然后去修复bug，修复后，再`git stash pop`，回到工作现场。
 
 ---
+
+### 删除空文件夹/空目录
+
+1. 使用`git rm -rf dir`命令删除文件夹或者空目录之后，本地还是会有空的目录存在，这时候空目录已经是*untracked*状态；
+2. 使用使用`git clean -fd`命令删除untracked状态的空目录，再进行commit、push即可。
