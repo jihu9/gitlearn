@@ -1,3 +1,6 @@
 ## ignore this file ##
 
 .DS_Store
+._vnote.json
+/_v_recycle_bin/
+/_v_recycle_bin/*
